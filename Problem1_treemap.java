@@ -15,39 +15,29 @@ class Solution {
                 tm.put(nums[i], list);
             }
         }
-        Map.Entry left = tm.firstEntry();
-        Map.Entry right = tm.lastEntry();
-        int remainder = target - (int)left.getKey();
+        Integer left = tm.firstKey();
+        Integer right = tm.lastKey();
 
-        while (true) {
-            while (remainder < (int)right.getKey()) {
-                right = tm.lowerEntry((Integer)right.getKey());
+        while (left < right && (left + right != target)) {
+            int sum = left + right;
+            if (sum > target) {
+                right = tm.lowerKey(right);
+            } else {
+                left = tm.higherKey(left);
             }
-            if ((int)right.getKey() == remainder) {
-                return getAnswerSet(left, right);
-            }
-
-            remainder = target - (int)right.getKey();
-            while (remainder > (int)left.getKey()) {
-                left = tm.higherEntry((Integer)left.getKey());
-            }
-
-            if ((int)left.getKey() == remainder) {
-                return getAnswerSet(left, right);
-            }
-            remainder = target - (int)left.getKey();
         }
+        return getAnswerSet(left, right, tm);
     }
 
-    static int[] getAnswerSet(Map.Entry left, Map.Entry right) {
-        ArrayList<Integer> a = (ArrayList<Integer>)left.getValue();
-        ArrayList<Integer> b = (ArrayList<Integer>)right.getValue();
-        return (int)left.getKey() == (int)right.getKey() ?
+    static int[] getAnswerSet(Integer left, Integer right, TreeMap<Integer, ArrayList<Integer>> tm) {
+        ArrayList<Integer> a = tm.get(left);
+        ArrayList<Integer> b = tm.get(right);
+        return left == right ?
             getOrderedSet(a.get(0), a.get(1)):
             getOrderedSet(a.get(0), b.get(0));
     }
 
     static int[] getOrderedSet(Integer a, Integer b) {
-        return new int[]{Math.min((int)a, (int)b), Math.max((int)a, (int)b)};
+        return (a > b) ? new int[]{b, a} : new int[]{a, b};
     }
 }
